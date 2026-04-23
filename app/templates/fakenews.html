@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Check</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-top">
+                <h2 class="logo">TruthLens AI</h2>
+                <p class="sidebar-subtext">Smart Forgery & Fact Verification</p>
+            </div>
+
+            <nav class="menu">
+                <a href="/" class="menu-item">Dashboard</a>
+                <a href="/upload" class="menu-item">Upload Document</a>
+                <a href="/scan" class="menu-item">Scan Forgery</a>
+                <a href="/fake-news" class="menu-item active">Fake News Check</a>
+                <a href="/history" class="menu-item">History</a>
+                <a href="/settings" class="menu-item">Settings</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="topbar">
+                <div>
+                    <h1>Fake News Check</h1>
+                    <p>Verify claims, headlines, and article text</p>
+                </div>
+            </div>
+
+            <section class="upload-panel">
+                <h2>Paste article or claim</h2>
+                <p>Enter text below to verify whether content is real, fake, or suspicious.</p>
+
+                <form class="upload-form">
+                    <textarea class="news-box" rows="8" placeholder="Paste article, claim, or headline here..."></textarea>
+                    <button type="submit" class="upload-btn">Verify Content</button>
+                </form>
+            </section>
+        </main>
+    </div>
+
+</body>
+</html>

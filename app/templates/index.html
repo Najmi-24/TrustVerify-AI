@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trust Verify AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-top">
+            <div class="sidebar-brand">
+                <h2>Trust Verify AI</h2>
+                <p>Smart Forgery and Fact Verification</p>
+            </div>
+
+            <nav class="sidebar-menu">
+                <a href="#detect" class="menu-link active">Detect</a>
+                <a href="#history" class="menu-link">History</a>
+                <a href="#about" class="menu-link">About</a>
+                <a href="#settings" class="menu-link">Settings</a>
+            </nav>
+        </div>
+
+        <div class="sidebar-bottom">
+            <button class="ai-assistant-btn" onclick="toggleAssistant()">AI Assistant</button>
+            <p class="ai-helper-text">Ask quick questions about verification</p>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <div class="top-title">
+            <h1>Trust Verify AI</h1>
+        </div>
+
+        <!-- Hero -->
+        <section class="hero-banner" id="detect">
+            <p class="hero-tag">AI DOCUMENT VERIFICATION</p>
+            <h2>Detect forged documents, screenshots, and suspicious files</h2>
+            <p class="hero-desc">
+                Upload any document and get an explainable authenticity result with confidence score.
+            </p>
+        </section>
+
+        <!-- Upload -->
+        <section class="content-card">
+            <h3>Upload Document</h3>
+            <p>Supports JPG, PNG, JPEG, PDF, TXT, DOCX</p>
+
+            <form action="/" method="POST" enctype="multipart/form-data" class="upload-form">
+                <input type="file" name="file" class="file-input">
+                <button type="submit" class="upload-btn">Upload</button>
+            </form>
+        </section>
+
+        <!-- Preview -->
+        <section class="content-card">
+            <h3>Document Preview</h3>
+
+            <div class="source-box">
+                {% if source_text %}
+                    <p><strong>Uploaded File:</strong> {{ filename }}</p>
+                    <hr>
+                    <p>{{ source_text }}</p>
+                    <p><strong>Verdict:</strong> {{ verdict }}</p>
+                    <p><strong>Confidence:</strong> {{ confidence }}</p>
+                {% else %}
+                    <p>No document uploaded yet.</p>
+                {% endif %}
+            </div>
+        </section>
+
+        <!-- Analysis -->
+        <section class="content-card">
+            <h3>Analysis Result</h3>
+
+            <div class="result-box">
+                {% if verdict %}
+                <div class="result-top">
+                    <span class="status 
+                        {% if verdict and 'Genuine' in verdict %}genuine
+                        {% elif verdict and ('Tampered' in verdict or 'Fake' in verdict) %}fake
+                        {% else %}suspicious
+                        {% endif %}
+                    ">
+                        {{ verdict }}
+                    </span>
+
+                    <span class="confidence">Confidence: {{ confidence }}</span>
+                </div>
+
+                <ul>
+                    {% for reason in reasons %}
+                        <li>{{ reason }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                    <p>No analysis yet.</p>
+                {% endif %}
+            </div>
+        </section>
+
+        <!-- Fact Verification -->
+        <section class="content-card">
+            <h3>Fact Verification</h3>
+
+            <form action="/fact-check" method="POST">
+                <textarea name="fact_text" rows="8" placeholder="Paste text here..."></textarea>
+                <br><br>
+                <button type="submit" class="upload-btn">Analyze</button>
+            </form>
+
+            {% if fact_summary %}
+            <div class="result-box fact-result">
+                <p><strong>Summary:</strong> {{ fact_summary }}</p>
+
+                <span class="status 
+                    {% if fact_verdict and 'Real' in fact_verdict %}genuine
+                    {% elif fact_verdict and 'Fake' in fact_verdict %}fake
+                    {% else %}suspicious
+                    {% endif %}
+                ">
+                    {{ fact_verdict }}
+                </span>
+
+                <p><strong>Confidence:</strong> {{ fact_confidence }}</p>
+
+                <ul>
+                    {% for reason in fact_reasons %}
+                        <li>{{ reason }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- History -->
+        <section class="content-card" id="history">
+    <h3>History</h3>
+
+    {% if history %}
+        {% for item in history %}
+            <div class="history-item">
+                <span class="history-name">{{ item.filename }}</span>
+                <span class="status 
+                    {% if 'Genuine' in item.verdict %}genuine
+                    {% elif 'Tampered' in item.verdict or 'Fake' in item.verdict %}fake
+                    {% else %}suspicious
+                    {% endif %}
+                ">
+                    {{ item.verdict }}
+                </span>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No history available.</p>
+    {% endif %}
+</section>
+
+        <!-- About -->
+        <section class="content-card" id="about">
+            <h3>About</h3>
+            <p>
+                Trust Verify AI is a smart web platform that analyzes uploaded files
+                and helps users understand whether a document looks genuine,
+                suspicious, or likely fake. It also includes fact verification
+                features for pasted claims, headlines, and article text.
+            </p>
+        </section>
+
+        <!-- Settings -->
+        <section class="content-card" id="settings">
+            <h3>Settings</h3>
+            <p>
+                Theme, threshold, report options, and other preferences can be added here later.
+            </p>
+        </section>
+
+    </main>
+</div>
+
+<!-- Assistant -->
+<div id="assistantBox" class="assistant-box">
+    <div class="assistant-header">
+        <span>AI Assistant</span>
+        <button onclick="toggleAssistant()">×</button>
+    </div>
+
+    <div id="assistantMessages" class="assistant-messages"></div>
+
+    <div class="assistant-input-area">
+        <input type="text" id="assistantInput" placeholder="Ask something...">
+        <button onclick="sendAssistantMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+function toggleAssistant() {
+    let box = document.getElementById("assistantBox");
+    box.style.display = box.style.display === "flex" ? "none" : "flex";
+}
+</script>
+
+</body>
+</html>

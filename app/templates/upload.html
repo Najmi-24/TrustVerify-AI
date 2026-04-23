@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Document</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-top">
+                <h2 class="logo">TruthLens AI</h2>
+                <p class="sidebar-subtext">Smart Forgery & Fact Verification</p>
+            </div>
+
+            <nav class="menu">
+                <a href="/" class="menu-item">Dashboard</a>
+                <a href="/upload" class="menu-item active">Upload Document</a>
+                <a href="/scan" class="menu-item">Scan Forgery</a>
+                <a href="/fake-news" class="menu-item">Fake News Check</a>
+                <a href="/history" class="menu-item">History</a>
+                <a href="/settings" class="menu-item">Settings</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="topbar">
+                <div>
+                    <h1>Upload Document</h1>
+                    <p>Select a file and prepare it for analysis</p>
+                </div>
+            </div>
+
+            <section class="upload-panel">
+                <h2>Choose a file to upload</h2>
+                <p>Supported formats: PDF, JPG, PNG, TXT</p>
+
+                <form action="/" method="POST" enctype="multipart/form-data" class="upload-form">
+                    <input type="file" name="file" class="file-input">
+                    <button type="submit" class="upload-btn">Upload File</button>
+                </form>
+            </section>
+        </main>
+    </div>
+
+</body>
+</html>

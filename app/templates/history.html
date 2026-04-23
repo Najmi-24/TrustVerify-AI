@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-top">
+                <h2 class="logo">TruthLens AI</h2>
+                <p class="sidebar-subtext">Smart Forgery & Fact Verification</p>
+            </div>
+
+            <nav class="menu">
+                <a href="/" class="menu-item">Dashboard</a>
+                <a href="/upload" class="menu-item">Upload Document</a>
+                <a href="/scan" class="menu-item">Scan Forgery</a>
+                <a href="/fake-news" class="menu-item">Fake News Check</a>
+                <a href="/history" class="menu-item active">History</a>
+                <a href="/settings" class="menu-item">Settings</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="topbar">
+                <div>
+                    <h1>History</h1>
+                    <p>Review your recent scans and verification results</p>
+                </div>
+            </div>
+
+            <section class="recent-section">
+                <h2>Recent Analysis</h2>
+
+                <div class="recent-table">
+                    <div class="table-header">
+                        <span>File Name</span>
+                        <span>Type</span>
+                        <span>Result</span>
+                        <span>Date</span>
+                    </div>
+
+                    <div class="table-row">
+                        <span>invoice_01.pdf</span>
+                        <span>Document</span>
+                        <span class="badge suspicious">Suspicious</span>
+                        <span>Apr 15</span>
+                    </div>
+
+                    <div class="table-row">
+                        <span>article_02.txt</span>
+                        <span>News</span>
+                        <span class="badge fake">Fake</span>
+                        <span>Apr 15</span>
+                    </div>
+
+                    <div class="table-row">
+                        <span>certificate.png</span>
+                        <span>Image</span>
+                        <span class="badge genuine">Genuine</span>
+                        <span>Apr 14</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+</body>
+</html>
