@@ -9,6 +9,7 @@ from app.models import UploadHistory
 main = Blueprint("main", __name__)
 
 UPLOAD_FOLDER = os.path.join(os.getcwd(), "uploads")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 @main.route("/", methods=["GET", "POST"])
