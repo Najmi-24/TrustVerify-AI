@@ -2,10 +2,12 @@ import os
 import re
 import pytesseract
 import pdfplumber
+import google.generativeai as genai
 from pdf2image import convert_from_path
 from collections import Counter
 from docx import Document
 from PIL import Image, ImageChops, ImageEnhance
+
 
 # Tesseract path
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
@@ -29,6 +31,13 @@ SUSPICIOUS_KEYWORDS = [
     "invalid", "not valid", "sample", "dummy", "test document",
     "forged", "copy", "unauthorized", "manipulated"
 ]
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+if GEMINI_API_KEY:
+    genai.configure(api_key=GEMINI_API_KEY)
+    gemini_model = genai.GenerativeModel("gemini-1.5-flash")
+else:
+    gemini_model = None
 
 
 def clean_text(text):
@@ -194,8 +203,29 @@ def extract_text_from_pdf(file_path):
         return joined if joined else "No readable text found in PDF."
     except Exception:
         return "No readable text found in PDF."
+    
+    def gemini_summary_and_advice(text, doc_type):
+    if not gemini_model or not text or len(text) < 30:
+        return None
 
+    try:
+        prompt = f"""
+Analyze this {doc_type}.
 
+Return only:
+Summary: one short paragraph
+Suspicious Points: 2-4 bullet points
+Advice: one practical sentence
+
+Document:
+{text[:3000]}
+"""
+        response = gemini_model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        print("GEMINI ERROR:", e)
+        return None
+    
 def build_result(text, filename):
     text = clean_text(text)
     doc_type = detect_document_type(text, filename)
@@ -203,6 +233,9 @@ def build_result(text, filename):
     suspicious_words = find_suspicious_keywords(text)
 
     raw_summary = generate_document_summary(text)
+    gemini_output = gemini_summary_and_advice(text, doc_type)
+    if gemini_output:
+     raw_summary = gemini_output
 
     # Short summary
     summary = raw_summary
