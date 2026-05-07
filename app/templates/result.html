@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-top">
+                <h2 class="logo">TruthLens AI</h2>
+                <p class="sidebar-subtext">Smart Forgery & Fact Verification</p>
+            </div>
+
+            <nav class="menu">
+                <a href="/" class="menu-item">Dashboard</a>
+                <a href="/upload" class="menu-item active">Upload Document</a>
+                <a href="/scan" class="menu-item">Scan Forgery</a>
+                <a href="/fake-news" class="menu-item">Fake News Check</a>
+                <a href="/history" class="menu-item">History</a>
+                <a href="/settings" class="menu-item">Settings</a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div class="topbar">
+                <div>
+                    <h1>Upload Result</h1>
+                    <p>Your file has been uploaded successfully</p>
+                </div>
+            </div>
+
+            <section class="welcome-card">
+                <h2>File Uploaded</h2>
+                <p><strong>Uploaded File:</strong> {{ filename }}</p>
+                <p>The document has been saved and is ready for analysis.</p>
+
+                <br>
+                <a href="/upload" class="upload-btn" style="text-decoration: none; display: inline-block;">Upload Another File</a>
+            </section>
+        </main>
+    </div>
+
+</body>
+</html>

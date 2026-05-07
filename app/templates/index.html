@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrustVerify AI</title>
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f8fafc;
+  --sidebar:#ffffff;
+  --panel:#ffffff;
+  --card:#ffffff;
+  --primary:#7c5cff;
+  --primary-light:#a78bfa;
+  --text:#111827;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+  --user:#7c5cff;
+  --bot:#f3f4f6;
+  --teal:#7c5cff;
+  --purple:#7c5cff;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--light);height:100vh;overflow:hidden;font-size:13px}
+
+/* TOPBAR */
+.topbar{height:58px;background:var(--sidebar);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 18px}
+.topbar-brand{display:flex;align-items:center;gap:10px;font-family:'DM Serif Display',serif;font-size:20px}
+.brand-icon{width:36px;height:36px;background:var(--teal);border-radius:9px;display:flex;align-items:center;justify-content:center}
+.brand-sub{font-family:'DM Sans';font-size:12px;color:var(--muted)}
+.topbar-center h2{
+  font-family:'DM Sans',sans-serif;
+  font-size:18px;
+  font-weight:600;
+  color:#111827;
+}
+.topbar-center p{
+  color:#6b7280;
+  font-size:12px;
+}
+.online-badge{color:#34C759;display:flex;align-items:center;gap:6px}
+.odot{width:8px;height:8px;background:#34C759;border-radius:50%}
+.topbar-actions{display:flex;gap:10px}
+.tb-btn{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,.12);padding:9px 14px;border-radius:8px;cursor:pointer}
+.tb-btn.active-view{background:rgba(124,111,205,.25);color:#fff}
+.tb-btn.primary{background:#111111;;color:#ffffff;;border:none;font-weight:600}
+
+/* MAIN */
+.main{height:calc(100vh - 58px);display:flex}
+
+/* SIDEBAR */
+.sidebar{width:220px;background:var(--sidebar);border-right:1px solid var(--border);padding:16px 12px;display:flex;flex-direction:column}
+.new-chat-btn{background:var(--purple);color:white;border:none;border-radius:9px;padding:12px;font-weight:600;cursor:pointer}
+.sidebar-section{margin-top:18px}
+.sidebar-label{text-transform:uppercase;color:var(--muted);font-size:10px;letter-spacing:1.5px;margin-bottom:8px}
+.sidebar-item{padding:10px;border-radius:8px;color:var(--muted);cursor:pointer}
+.sidebar-item.active,.sidebar-item:hover{background:rgba(124,111,205,.18);color:white}
+.sidebar-divider{height:1px;background:var(--border);margin:18px 0}
+.chat-history-item{padding:9px;border-radius:8px;color:var(--muted);font-size:12px}
+.chat-history-item.active,.chat-history-item:hover{background:rgba(124,111,205,.18);color:white}
+.sidebar-bottom{margin-top:auto;border-top:1px solid var(--border);padding-top:14px}
+.user-row{display:flex;gap:9px;align-items:center}
+.avatar{width:32px;height:32px;border-radius:50%;background:rgba(124,111,205,.35);display:flex;align-items:center;justify-content:center}
+.user-info span{color:var(--muted);font-size:11px}
+
+/* VIEW AREA */
+.view-area{flex:1;display:flex;overflow:hidden}
+.view{flex:1;display:none;flex-direction:column}
+.view.active{display:flex}
+
+/* CHAT */
+.chat-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.chat-header h2{
+  font-family:'DM Sans',sans-serif;
+  font-size:20px;
+  font-weight:600;
+  color:#111827;
+}
+.chat-header p{
+  color:#6b7280;
+  font-size:13px;
+}
+.chat-messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px}
+.msg-row{display:flex;flex-direction:column;gap:4px}
+.msg-row.user{align-items:flex-end}
+.msg-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.bubble{max-width:70%;padding:12px 14px;border-radius:12px;line-height:1.45}
+.bubble.user{
+  background:#111111;
+  color:#ffffff;
+}
+
+.bubble.bot{
+  background:#f5f5f5;
+  color:#111111;
+  border:1px solid #e5e5e5;
+}
+.typing-wrap{display:flex;gap:5px}
+.typing-dot{width:6px;height:6px;background:var(--muted);border-radius:50%;animation:blink 1.2s infinite}
+.typing-dot:nth-child(2){animation-delay:.2s}
+.typing-dot:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+
+/* ===== PREMIUM CHAT INPUT AREA ===== */
+
+.quick-chips {
+  padding: 12px 26px 8px !important;
+  display: flex;
+  gap: 10px;
+}
+
+.chip {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  color: #6b7280 !important;
+  border-radius: 999px !important;
+  padding: 8px 14px !important;
+  font-size: 13px;
+}
+
+.chip:hover {
+  background: #f3f0ff !important;
+  color: #7c5cff !important;
+  border-color: #c4b5fd !important;
+}
+
+.chat-input-area {
+  background: #f8fafc !important;
+  padding: 10px 26px 18px !important;
+  border-top: 1px solid #e5e7eb !important;
+}
+
+.input-row {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.input-box.full {
+  width: 100%;
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 18px !important;
+  padding: 8px 10px !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 8px 24px rgba(124,92,255,0.08);
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px !important;
+  background: #f3f0ff !important;
+  color: #7c5cff !important;
+}
+
+.input-box input {
+  font-size: 14px;
+}
+
+.send-btn {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 12px !important;
+  background: linear-gradient(135deg,#7c5cff,#a78bfa) !important;
+}
+
+.input-disclaimer {
+  max-width: 760px;
+  margin: 10px auto 0 !important;
+  text-align: center !important;
+}
+/* RIGHT PANEL */
+.right-panel{width:270px;background:var(--panel);border-left:1px solid var(--border);overflow-y:auto}
+.panel-header{padding:16px}
+.panel-tabs{display:flex;border-bottom:1px solid var(--border)}
+.ptab{flex:1;text-align:center;padding:10px;font-size:12px;color:var(--muted);cursor:pointer}
+.ptab.active{color:var(--teal);border-bottom:2px solid var(--teal)}
+.panel-body{padding:14px}
+.doc-preview{height:150px;background:#f9fafb;;border:1px solid rgba(255,255,255,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--muted);margin-bottom:14px}
+.panel-row{display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.05);padding:8px 0}
+.panel-key{color:var(--muted)}
+.panel-val{text-align:right}
+.upload-zone{border:1px dashed rgba(0,201,167,.35);border-radius:10px;padding:14px;text-align:center;margin-top:14px;cursor:pointer}
+.upload-zone span{color:var(--teal);font-size:11px}
+.upload-btn{width:100%;margin-top:10px;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:white;cursor:pointer}
+/* TRUST SCORE CIRCLE */
+.trust-score-box {
+  text-align: center;
+  margin: 18px 0;
+}
+
+.trust-score-box p {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+
+.score-circle {
+  width: 115px;
+  height: 115px;
+  border-radius: 50%;
+  margin: auto;
+  background: conic-gradient(#111111 0deg, #e5e5e5 0deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(0,201,167,0.25);
+}
+
+.score-inner {
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  background: var(--panel);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.score-inner span {
+  font-size: 23px;
+  font-weight: bold;
+}
+
+.score-inner small {
+  font-size: 10px;
+  color: var(--muted);
+}
+.score-circle {
+  transition: all 0.8s ease;
+}
+
+/* ===== FORCE CLEAN LIGHT THEME ===== */
+
+.chat-box,
+.chat-messages {
+  background: #f5f7fb !important;
+}
+
+.chat-input-area {
+  background: #f5f7fb !important;
+}
+
+.input-box {
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+}
+
+.input-box input {
+  color: #111827 !important;
+}
+
+.topbar,
+.sidebar,
+.chat-header,
+.right-panel {
+  background: #ffffff !important;
+  border-color: #e5e7eb !important;
+}
+
+.bubble.bot {
+  background: #f3f4f6 !important;
+  color: #111827 !important;
+}
+
+.bubble.user {
+  background: #2563eb !important;
+  color: white !important;
+}
+
+.doc-preview {
+  background: #f9fafb !important;
+}
+
+.panel-header h3,
+.chat-header h2,
+.topbar-center h2 {
+  color: #111827 !important;
+}
+
+.chat-header p,
+.topbar-center p,
+.sidebar-label,
+.panel-key,
+.flags-text {
+  color: #6b7280 !important;
+}
+.hero-upload-btn,
+.send-btn,
+.new-chat-btn {
+  background:#111111 !important;
+  color:#ffffff !important;
+}
+
+.hero-upload-btn:hover,
+.send-btn:hover {
+  background:#000000 !important;
+}
+.hero-icon {
+  background:#111111;
+  color:#ffffff;
+}
+.sidebar-item:hover,
+.chat-history-item:hover {
+  background:#f5f5f5;
+  color:#111111;
+}
+
+.sidebar-item.active {
+  background:#111111;
+  color:#ffffff;
+}
+/* ===== DOCUMENT DETAILS BLACK & WHITE ===== */
+
+.right-panel {
+  background: #ffffff !important;
+  border-left: 1px solid #e5e5e5 !important;
+  color: #111111 !important;
+}
+
+.panel-header h3 {
+  color: #111111 !important;
+}
+
+.panel-tabs {
+  border-bottom: 1px solid #e5e5e5 !important;
+}
+
+.ptab {
+  color: #6b7280 !important;
+}
+
+.ptab.active {
+  color: #111111 !important;
+  border-bottom: 2px solid #111111 !important;
+}
+
+/* preview box */
+.doc-preview {
+  background: #f5f5f5 !important;
+  border: 1px solid #e5e5e5 !important;
+  color: #6b7280 !important;
+}
+
+/* details rows */
+.panel-row,
+.detail-row {
+  border-bottom: 1px solid #e5e5e5 !important;
+}
+
+.panel-key,
+.detail-row span {
+  color: #6b7280 !important;
+}
+
+.panel-val,
+.detail-row b {
+  color: #111111 !important;
+}
+
+/* flags section */
+.flags-title {
+  color: #6b7280 !important;
+}
+
+.flags-text {
+  color: #111111 !important;
+}
+
+/* trust score */
+.score-inner {
+  background: #ffffff !important;
+}
+
+.score-inner span {
+  color: #111111 !important;
+}
+
+/* upload button */
+.upload-btn {
+  background: #111111 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.upload-btn:hover {
+  background: #000000 !important;
+}
+/* ===== CLEAN WHITE UI FINAL ===== */
+
+body,
+.main,
+.view,
+.chat-messages,
+.chat-input-area {
+  background: #f8fafc !important;
+  color: #111827 !important;
+}
+
+.topbar,
+.sidebar,
+.right-panel {
+  background: #ffffff !important;
+  border-color: #e5e7eb !important;
+}
+
+.welcome-hero,
+.input-box,
+.doc-preview {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 16px !important;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.04);
+}
+
+.bubble.user {
+  background: #111111 !important;
+  color: #ffffff !important;
+}
+
+.bubble.bot {
+  background: #f3f4f6 !important;
+  color: #111827 !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+.new-chat-btn,
+.send-btn,
+.upload-btn,
+.hero-upload-btn,
+.tb-btn.primary {
+  background: #111111 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.sidebar-item.active {
+  background: #111111 !important;
+  color: #ffffff !important;
+}
+
+.sidebar-item:hover,
+.chat-history-item:hover {
+  background: #f3f4f6 !important;
+  color: #111111 !important;
+}
+
+.detail-row,
+.panel-tabs {
+  border-color: #e5e7eb !important;
+}
+
+.detail-row b,
+.panel-header h3,
+.topbar-center h2,
+.welcome-hero h1 {
+  color: #111827 !important;
+}
+
+.detail-row span,
+.flags-title,
+.flags-text,
+.sidebar-label,
+.chat-history-item,
+.topbar-center p,
+.input-disclaimer {
+  color: #6b7280 !important;
+}
+
+.score-inner {
+  background: #ffffff !important;
+}
+
+.score-inner span {
+  color: #111111 !important;
+}
+/* FINAL PURPLE THEME OVERRIDE */
+body,.main,.view,.chat-messages,.chat-input-area{
+  background:linear-gradient(135deg,#f3f0ff,#ffffff) !important;
+  color:#111827 !important;
+}
+
+.topbar,.sidebar,.right-panel{
+  background:#ffffff !important;
+  border-color:#e5e7eb !important;
+}
+
+.new-chat-btn,.send-btn,.upload-btn,.hero-upload-btn,.tb-btn.primary{
+  background:linear-gradient(135deg,#7c5cff,#a78bfa) !important;
+  color:#ffffff !important;
+  border:none !important;
+}
+
+.bubble.user{
+  background:linear-gradient(135deg,#7c5cff,#a78bfa) !important;
+  color:#ffffff !important;
+}
+
+.bubble.bot{
+  background:#f3f4f6 !important;
+  color:#111827 !important;
+  border:1px solid #e5e7eb !important;
+}
+
+.sidebar-item.active{
+  background:linear-gradient(135deg,#7c5cff,#a78bfa) !important;
+  color:#ffffff !important;
+}
+
+.sidebar-item:hover,.chat-history-item:hover{
+  background:#f3f0ff !important;
+  color:#111827 !important;
+}
+
+.ptab.active{
+  color:#7c5cff !important;
+  border-bottom:2px solid #7c5cff !important;
+}
+
+.score-inner span{
+  color:#7c5cff !important;
+}
+
+.welcome-hero,.input-box,.doc-preview{
+  background:#ffffff !important;
+  border:1px solid #e5e7eb !important;
+  box-shadow:0 6px 20px rgba(124,92,255,0.08) !important;
+}
+/* ABOUT MODAL (PURPLE THEME) */
+
+.about-box {
+  width:460px;
+  background:#ffffff;
+  color:#111827;
+  border-radius:18px;
+  padding:28px;
+  position:relative;
+  border:1px solid #e5e7eb;
+  box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* close button */
+.about-box span {
+  position:absolute;
+  top:12px;
+  right:18px;
+  font-size:26px;
+  cursor:pointer;
+  color:#6b7280;
+}
+
+/* logo box */
+.about-box .logo {
+  width:60px;
+  height:60px;
+  border-radius:16px;
+  background:linear-gradient(135deg,#7c5cff,#a78bfa);
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  margin-bottom:16px;
+}
+
+/* feature cards */
+.about-box .feature {
+  background:#f3f4f6;
+  padding:10px;
+  border-radius:10px;
+  font-size:13px;
+}
+
+/* warning */
+.about-box .warning {
+  background:#f3f0ff;
+  border-left:4px solid #7c5cff;
+  padding:12px;
+  border-radius:10px;
+  font-size:13px;
+}
+.features-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.feature {
+  background: #f3f0ff;  /* light purple */
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #111827;
+  border: 1px solid #e5e7eb;
+}
+.about-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(4px);
+  z-index: 99999;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-box {
+  width: 460px;
+  background: #ffffff;
+  color: #111827;
+  border-radius: 20px;
+  padding: 28px;
+  position: relative;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 20px 60px rgba(124,92,255,0.18);
+}
+
+.about-close {
+  position: absolute;
+  top: 12px;
+  right: 18px;
+  font-size: 26px;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.about-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: linear-gradient(135deg,#7c5cff,#a78bfa);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin-bottom: 16px;
+}
+
+.about-text {
+  color: #6b7280;
+  margin: 8px 0 18px;
+  line-height: 1.5;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.feature {
+  background: #f3f0ff;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #111827;
+}
+
+.about-warning {
+  background: #f3f0ff;
+  border-left: 4px solid #7c5cff;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+/* FORCE DISCLAIMER BELOW INPUT BAR */
+.chat-input-area {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.input-row {
+  width: 100% !important;
+  max-width: 760px !important;
+  margin: 0 auto !important;
+}
+
+.input-disclaimer {
+  width: 100% !important;
+  max-width: 760px !important;
+  display: block !important;
+  text-align: center !important;
+  margin-top: 6px !important;
+  color: #6b7280 !important;
+  font-size: 11px !important;
+}
+.chat-input-area {
+  position: sticky;
+  bottom: 0;
+  backdrop-filter: blur(10px);
+}
+
+.input-box.full {
+  transition: all 0.2s ease;
+}
+
+.input-box.full:focus-within {
+  border-color: #7c5cff !important;
+  box-shadow: 0 0 0 3px rgba(124,92,255,0.15);
+}
+</style>
+
+<link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<!-- TOP BAR -->
+ <!-- TOP BAR -->
+<div class="topbar">
+
+<div class="topbar-brand">
+  TrustVerify AI
+</div>
+  
+
+ <div class="topbar-center"></div>
+
+  <div class="online-badge">
+    <span class="odot"></span>Online
+  </div>
+
+  <div class="topbar-actions">
+    <button class="tb-btn active-view" onclick="showView('chat')">Chat</button>
+    <button class="tb-btn primary" onclick="document.getElementById('fileInput').click()">Upload Doc</button>
+    <input type="file" id="fileInput" hidden onchange="handleUpload(event)">
+  </div>
+
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <button class="new-chat-btn" onclick="newChat()">+ New Chat</button>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Navigation</div>
+      <div class="sidebar-item active" onclick="setActiveNav(this);showView('chat')">Chat</div>
+
+      <div class="sidebar-item" onclick="openAbout()">About</div>
+
+      <div class="sidebar-item" onclick="setActiveNav(this)">Settings</div>
+      <div class="sidebar-item" onclick="setActiveNav(this); openCurrentDocument()">Document Preview</div>
+    </div>
+    <div class="sidebar-divider"></div>
+
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Recent Chats</div>
+      <div id="historyList">
+  {% if history %}
+    {% for item in history %}
+     <div class="chat-history-item"
+     onclick="loadChat({{ item.id }})">
+  {{ item.filename }}
+</div> 
+    {% endfor %}
+  {% else %}
+    <div class="chat-history-item">No recent chats yet</div>
+  {% endif %}
+</div>
+</div> 
+
+    <div class="sidebar-bottom">
+      <div class="user-row">
+        <div class="avatar">U</div>
+        <div class="user-info">
+          <p>User</p>
+          <span>Free plan</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW AREA -->
+  <div class="view-area">
+
+    <!-- CHAT VIEW -->
+    <div class="view active" id="view-chat">
+    
+      <div class="chat-messages" id="chatMessages">
+       <div class="big-hero">
+
+  <div class="hero-left">
+    <span class="hero-badge">✦ AI Document Intelligence</span>
+
+    <h1>
+      Verify<br>
+      documents<br>
+      with <span>AI</span>
+    </h1>
+
+    <p>
+      Upload PDFs or images to detect suspicious patterns,
+      generate summaries, and get confidence-based analysis.
+    </p>
+
+    <button class="hero-upload-btn" onclick="document.getElementById('fileInput').click()">
+      ☁ Upload Document
+    </button>
+
+    <small>PDF, JPG, PNG up to 50MB</small>
+  </div>
+
+  <div class="hero-illustration">
+    <div class="circle-bg"></div>
+    <div class="paper-card">
+      <b>DOCUMENT</b>
+      <div></div><div></div><div></div>
+      <div class="image-box"></div>
+      <div></div><div></div>
+    </div>
+    <div class="check-badge">✓</div>
+    <div class="ai-shield">AI</div>
+  </div>
+
+  <div class="feature-row">
+    <div class="feature-card">🛡 <b>Authenticity</b><span>Verify real vs fake documents</span></div>
+    <div class="feature-card">📄 <b>Smart Summary</b><span>Get AI-generated summaries</span></div>
+    <div class="feature-card">🔍 <b>Pattern Detection</b><span>Detect suspicious patterns</span></div>
+    <div class="feature-card">📊 <b>Confidence Score</b><span>AI confidence-based analysis</span></div>
+  </div>
+
+</div>
+        <div class="msg-row bot">
+          <div class="msg-label">TrustVerify AI</div>
+          <div class="bubble bot">
+            👋 Hi! Upload any document and I will analyse its authenticity, summary, verdict, confidence, and reasons.
+          </div>
+        </div>
+      </div>
+
+      <div class="quick-chips" id="quickChips">
+        <button class="chip" onclick="sendChip('Explain this document simply')">Explain simply</button>
+        <button class="chip" onclick="sendChip('Is this legally valid?')">Is this legally valid?</button>
+        <button class="chip" onclick="sendChip('What fields were flagged?')">Flagged fields</button>
+      </div>
+
+      <div class="chat-input-area">
+        <div class="input-row">
+           <div class="input-box full">
+             <button class="icon-btn" onclick="document.getElementById('fileInput').click()">📎</button>
+
+             <input type="text" id="msgInput"
+              placeholder="Ask anything about the document..."
+              onkeydown="if(event.key==='Enter')sendMsg()">
+
+             <button class="send-btn" onclick="sendMsg()">➤</button>
+             </div>
+         </div>
+
+        <div class="input-disclaimer">
+          TrustVerify AI can make mistakes. Please verify important information.
+          </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+      <div class="panel-header">
+        <h3>Document Details</h3>
+      </div>
+
+      <div class="panel-tabs">
+        <div class="ptab active" onclick="setPanelTab(this,'pt-details')">Details</div>
+        <div class="ptab" onclick="setPanelTab(this,'pt-flags')">Flags</div>
+      </div>
+
+      <div class="panel-body" id="pt-details">
+        <div class="doc-preview" id="previewBox">
+  <div style="text-align:center; color:#6b7280;">
+    📄 No document selected
+  </div>
+</div>
+        
+
+<div class="trust-score-box">
+  <p>TRUST SCORE</p>
+
+  <div class="score-circle" id="scoreCircle">
+    <div class="score-inner">
+      <span id="scoreText">0%</span>
+      <small>Confidence</small>
+    </div>
+  </div>
+</div>
+
+<div class="detail-list">
+  <div class="detail-row">
+    <span>File name</span>
+    <b id="fileName">-</b>
+  </div>
+
+  <div class="detail-row">
+    <span>Type</span>
+    <b id="docType">-</b>
+  </div>
+
+  <div class="detail-row">
+    <span>Size</span>
+    <b id="fileSize">-</b>
+  </div>
+
+  <div class="detail-row">
+    <span>Verdict</span>
+    <b id="verdict" class="orange-text">-</b>
+  </div>
+
+  <div class="detail-row">
+    <span>Confidence</span>
+    <b id="confidence" class="orange-text">-</b>
+  </div>
+
+  <div class="detail-row">
+    <span>Verified on</span>
+    <b id="verifiedOn" class="muted-text">-</b>
+  </div>
+</div>
+
+<div class="flags-title">FLAGS DETECTED</div>
+<p id="flagsList" class="flags-text">Upload a document to see detected flags.</p>
+<button onclick="downloadReport()" class="upload-btn" style="margin-top:15px;">
+  📄 Download Report
+</button>
+
+
+      </div> <!-- closes panel-body -->
+    </div> <!-- closes right-panel -->
+  </div> <!-- closes view-area -->
+</div> <!-- closes main -->
+
+
+
+<script>
+  let currentDocumentUrl = null;
+
+function openCurrentDocument() {
+  if (!currentDocumentUrl) {
+    alert("No document uploaded yet.");
+    return;
+  }
+
+  const modal = document.getElementById("docModal");
+  const viewer = document.getElementById("docViewer");
+
+modal.style.display = "flex";
+setTimeout(() => modal.classList.add("show"), 10);  
+
+  if (currentDocumentUrl.endsWith(".pdf")) {
+    viewer.innerHTML = `
+      <iframe src="${currentDocumentUrl}" 
+              style="width:100%;height:100%;border:0;">
+      </iframe>
+    `;
+  } else {
+    viewer.innerHTML = `
+      <img src="${currentDocumentUrl}" 
+           style="width:100%;height:100%;object-fit:contain;">
+    `;
+  }
+}
+
+function closeDocPreview() {
+  document.getElementById("docModal").style.display = "none";
+}  
+function addMsg(text, role) {
+  const body = document.getElementById("chatMessages");
+  const row = document.createElement("div");
+  row.className = "msg-row " + role;
+
+  row.innerHTML = `
+    <div class="msg-label">${role === "user" ? "You" : "TrustVerify AI"}</div>
+    <div class="bubble ${role}">${text}</div>
+  `;
+
+  body.appendChild(row);
+  body.scrollTop = body.scrollHeight;
+}
+
+function showTyping() {
+  const body = document.getElementById("chatMessages");
+  const row = document.createElement("div");
+  row.className = "msg-row bot";
+  row.id = "typingRow";
+  row.innerHTML = `
+    <div class="msg-label">TrustVerify AI</div>
+    <div class="bubble bot">
+      <div class="typing-wrap">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>
+    </div>
+  `;
+  body.appendChild(row);
+  body.scrollTop = body.scrollHeight;
+}
+
+function removeTyping() {
+  const typing = document.getElementById("typingRow");
+  if (typing) typing.remove();
+}
+
+function sendMsg() {
+  const input = document.getElementById("msgInput");
+  const question = input.value.trim();
+  if (!question) return;
+
+  addMsg(question, "user");
+  input.value = "";
+  showTyping();
+
+  fetch("/ask-document", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({question: question})
+  })
+  .then(res => res.json())
+  .then(data => {
+    removeTyping();
+    addMsg(data.answer || "No answer received.", "bot");
+  })
+  .catch((error) => {
+  console.error("UPLOAD JS ERROR:", error);
+  removeTyping();
+  addMsg("Upload failed because frontend JavaScript crashed. Press F12 → Console to see error.", "bot");
+});
+}
+
+function sendChip(text) {
+  document.getElementById("msgInput").value = text;
+  sendMsg();
+}
+
+function handleUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  showView("chat");
+  addMsg("Uploading: " + file.name, "user");
+  showTyping();
+
+  fetch("/upload-chat", {
+    method: "POST",
+    body: formData
+  })
+  .then(res => res.json())
+  .then(data => {
+    removeTyping();
+
+    if (data.error) {
+      addMsg(data.error, "bot");
+      return;
+    }
+
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
+
+    setText("fileName", data.filename || file.name);
+    currentDocumentUrl = "/uploads/" + (data.filename || file.name);
+
+
+    setText("docType", data.doc_type || "-");
+    setText("fileSize", Math.round(file.size / 1024) + " KB");
+    setText("verdict", data.verdict || "-");
+    setText("confidence", data.confidence || "-");
+
+    const confidenceValue = parseInt(data.confidence) || 0;
+    let scoreColor = "#111111";
+
+    if ((data.verdict || "").toLowerCase().includes("tampered")) {
+      scoreColor = "#ef4444";
+    } else if ((data.verdict || "").toLowerCase().includes("suspicious")) {
+      scoreColor = "#f59e0b";
+    }
+
+    const scoreText = document.getElementById("scoreText");
+    const scoreCircle = document.getElementById("scoreCircle");
+
+    if (scoreText) {
+      scoreText.textContent = confidenceValue + "%";
+      scoreText.style.color = scoreColor;
+    }
+
+    if (scoreCircle) {
+      const deg = confidenceValue * 3.6;
+      scoreCircle.style.background =
+        `conic-gradient(${scoreColor} ${deg}deg, rgba(255,255,255,0.08) ${deg}deg)`;
+    }
+
+    const previewBox = document.getElementById("previewBox");
+    if (previewBox) {
+      if (data.filename && data.filename.toLowerCase().endsWith(".pdf")) {
+        previewBox.innerHTML = `<iframe src="/uploads/${data.filename}" style="width:100%;height:100%;border:0;"></iframe>`;
+      } else if (data.filename && data.filename.match(/\.(jpg|jpeg|png)$/i)) {
+        previewBox.innerHTML = `<img src="/uploads/${data.filename}" style="width:100%;height:100%;object-fit:contain;">`;
+      } else {
+        previewBox.textContent = data.summary || "Preview not available";
+      }
+    }
+
+    const reasons = (data.reasons || []).map(r => "• " + r).join("<br>");
+
+    const flagsList = document.getElementById("flagsList");
+    if (flagsList) {
+      flagsList.innerHTML = reasons || "No clear reason detected.";
+    }
+
+    addMsg(`
+      <strong>📊 Verdict:</strong> ${data.verdict || "Needs Review"}<br>
+      <strong>📈 Confidence:</strong> ${data.confidence || "50%"}<br>
+      <strong>📝 Summary:</strong> ${data.summary || "No readable content found."}<br><br>
+      <strong>🧠 Reasons:</strong><br>
+      ${reasons || "No clear reason detected."}
+    `, "bot");
+  })
+  .catch((error) => {
+    removeTyping();
+    console.error("UPLOAD ERROR:", error);
+    addMsg("Upload failed because frontend JavaScript crashed. Check Console.", "bot");
+  });
+}
+
+function clearChat() {
+  fetch("/clear-session", {method: "POST"});
+  document.getElementById("chatMessages").innerHTML = "";
+  addMsg("👋 New chat started. Upload a document or ask me anything about it.", "bot");
+}
+
+function newChat() {
+  clearChat();
+  showView("chat");
+}
+function loadChat(id) {
+  fetch("/load-history/" + id)
+    .then(res => res.json())
+    .then(data => {
+
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+
+      // Update right panel
+      document.getElementById("fileName").textContent = data.filename;
+      document.getElementById("docType").textContent = data.doc_type;
+      document.getElementById("verdict").textContent = data.verdict;
+      document.getElementById("confidence").textContent = data.confidence;
+
+      // Reasons
+      const reasons = (data.reasons || []).map(r => "• " + r).join("<br>");
+      document.getElementById("flagsList").innerHTML = reasons;
+
+      // Add message to chat area
+      document.getElementById("chatMessages").innerHTML = "";
+
+addMsg(`
+  <strong>📄 Document uploaded successfully</strong><br><br>
+  <strong>📝 Summary:</strong><br>
+  ${data.summary || "No summary available."}<br><br>
+  <strong>📊 Verdict:</strong> ${data.verdict || "Needs Review"}<br>
+  <strong>📈 Confidence:</strong> ${data.confidence || "50%"}<br><br>
+  <strong>🧠 Reasons:</strong><br>
+  ${reasons || "No clear reason detected."}<br><br>
+  <strong>💡 Advice:</strong><br>
+  ${data.advice || "Please verify this document with the official source before trusting it."}
+`, "bot");
+
+      showView("chat");
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Failed to load chat");
+    });
+}
+
+function showView(name) {
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  if (name === "chat") {
+    document.getElementById("view-chat").classList.add("active");
+  }
+}
+
+function setActiveNav(el) {
+  document.querySelectorAll(".sidebar-item").forEach(i => i.classList.remove("active"));
+  if (el) el.classList.add("active");
+}
+
+function setPanelTab(el, id) {
+  document.querySelectorAll(".ptab").forEach(t => t.classList.remove("active"));
+  el.classList.add("active");
+
+  ["pt-details", "pt-flags"].forEach(i => {
+    const item = document.getElementById(i);
+    if (item) item.style.display = "none";
+  });
+
+  document.getElementById(id).style.display = "block";
+}
+
+let light = false;
+function toggleTheme() {
+  light = !light;
+  const r = document.documentElement.style;
+
+  if (light) {
+    r.setProperty("--bg", "#F0F4F8");
+    r.setProperty("--sidebar", "#FFFFFF");
+    r.setProperty("--panel", "#F9FAFB");
+    r.setProperty("--card", "#FFFFFF");
+    r.setProperty("--light", "#1A2E42");
+    r.setProperty("--muted", "#6B7C93");
+    r.setProperty("--border", "rgba(0,0,0,0.07)");
+    r.setProperty("--user", "#dce4ff");
+    r.setProperty("--bot", "#FFFFFF");
+  } else {
+    r.setProperty("--bg", "#0D1B2A");
+    r.setProperty("--sidebar", "#111f2e");
+    r.setProperty("--panel", "#0f1c2b");
+    r.setProperty("--card", "#172333");
+    r.setProperty("--light", "#E8EDF2");
+    r.setProperty("--muted", "#7A90A8");
+    r.setProperty("--border", "rgba(255,255,255,.08)");
+    r.setProperty("--user", "#2a3a6e");
+    r.setProperty("--bot", "#172333");
+  }
+}
+
+function openAbout(){
+  const modal = document.getElementById("aboutModal");
+  modal.style.display = "flex";
+  modal.style.alignItems = "center";
+  modal.style.justifyContent = "center";
+}
+
+function closeAbout(){
+  document.getElementById("aboutModal").style.display = "none";
+}
+window.onclick = function(event){
+  const modal = document.getElementById("aboutModal");
+  if(event.target === modal){
+    modal.style.display = "none";
+  }
+}
+function downloadReport() {
+  window.location.href = "/download-report";
+}
+
+</script>
+
+
+<div id="aboutModal" class="about-modal">
+  <div class="about-box">
+
+    <span class="about-close" onclick="closeAbout()">&times;</span>
+
+    <div class="about-logo">🛡</div>
+
+    <h2>TrustVerify AI</h2>
+
+    <p class="about-text">
+      AI-powered document verification system for detecting forgery,
+      generating summaries, and answering questions from uploaded files.
+    </p>
+
+    <div class="features-grid">
+      <div class="feature">✔ Smart Summary</div>
+      <div class="feature">✔ Fake Detection</div>
+      <div class="feature">✔ AI Chatbot</div>
+      <div class="feature">✔ Confidence Score</div>
+    </div>
+
+    <div class="about-warning">
+      ⚠ Always verify important documents with official sources.
+    </div>
+
+  </div>
+</div>  
+<div id="docModal" class="doc-modal">
+  <div class="doc-box">
+
+    <span class="doc-close" onclick="closeDocPreview()">&times;</span>
+
+    <div id="docViewer"></div>
+
+  </div>
+</div>
+
+</body>
+</html>
