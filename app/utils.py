@@ -204,7 +204,7 @@ def extract_text_from_pdf(file_path):
     except Exception:
         return "No readable text found in PDF."
     
-    def gemini_summary_and_advice(text, doc_type):
+def gemini_summary_and_advice(text, doc_type):
     if not gemini_model or not text or len(text) < 30:
         return None
 
