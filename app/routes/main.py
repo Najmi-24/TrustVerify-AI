@@ -269,3 +269,8 @@ def download_report():
     doc.build(content)
 
     return send_file(file_path, as_attachment=True)
+
+
+@main.route("/chat")
+def chat():
+    return render_template("chat.html")
