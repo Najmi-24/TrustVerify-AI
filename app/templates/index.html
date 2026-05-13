@@ -7,6 +7,7 @@
 
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -980,6 +981,7 @@ body,
 </style>
 
 <link rel="stylesheet" href="/static/style.css">
+<script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
@@ -989,9 +991,9 @@ body,
 <div class="topbar">
 
 <div class="topbar-brand">
-  TrustVerify AI
+  <img src="{{ url_for('static', filename='logo.png') }}" class="logo-img">
+  <span>𝐓𝐫𝐮𝐬𝐭𝐕𝐞𝐫𝐢𝐟𝐲 𝐀𝐢</span>
 </div>
-  
 
  <div class="topbar-center"></div>
 
@@ -1016,12 +1018,25 @@ body,
 
     <div class="sidebar-section">
       <div class="sidebar-label">Navigation</div>
-      <div class="sidebar-item active" onclick="setActiveNav(this);showView('chat')">Chat</div>
+      <div class="sidebar-item active" onclick="setActiveNav(this);showView('chat')">
+  <i data-lucide="message-circle"></i>
+  <span>Chat</span>
+</div>
 
-      <div class="sidebar-item" onclick="openAbout()">About</div>
+<div class="sidebar-item" onclick="openAbout()">
+  <i data-lucide="info"></i>
+  <span>About</span>
+</div>
 
-      <div class="sidebar-item" onclick="setActiveNav(this)">Settings</div>
-      <div class="sidebar-item" onclick="setActiveNav(this); openCurrentDocument()">Document Preview</div>
+<div class="sidebar-item" onclick="setActiveNav(this)">
+  <i data-lucide="settings"></i>
+  <span>Settings</span>
+</div>
+
+<div class="sidebar-item" onclick="setActiveNav(this); openCurrentDocument()">
+  <i data-lucide="file-text"></i>
+  <span>Document Preview</span>
+</div>
     </div>
     <div class="sidebar-divider"></div>
 
@@ -1033,8 +1048,9 @@ body,
     {% for item in history %}
      <div class="chat-history-item"
      onclick="loadChat({{ item.id }})">
-  {{ item.filename }}
-</div> 
+  <i data-lucide="file-text"></i>
+  <span>{{ item.filename }}</span>
+</div>
     {% endfor %}
   {% else %}
     <div class="chat-history-item">No recent chats yet</div>
@@ -1120,7 +1136,7 @@ body,
       <div class="chat-input-area">
         <div class="input-row">
            <div class="input-box full">
-             <button class="icon-btn" onclick="document.getElementById('fileInput').click()">📎</button>
+             <button class="icon-btn" onclick="document.getElementById('fileInput').click()">+</button>
 
              <input type="text" id="msgInput"
               placeholder="Ask anything about the document..."
@@ -1412,11 +1428,10 @@ function clearChat() {
   document.getElementById("chatMessages").innerHTML = "";
   addMsg("👋 New chat started. Upload a document or ask me anything about it.", "bot");
 }
-
 function newChat() {
-  clearChat();
-  showView("chat");
+  window.location.href = "/";
 }
+
 function loadChat(id) {
   fetch("/load-history/" + id)
     .then(res => res.json())
@@ -1532,6 +1547,7 @@ function downloadReport() {
   window.location.href = "/download-report";
 }
 
+lucide.createIcons();
 </script>
 
 
@@ -1540,7 +1556,9 @@ function downloadReport() {
 
     <span class="about-close" onclick="closeAbout()">&times;</span>
 
-    <div class="about-logo">🛡</div>
+<div class="about-logo">
+  <img src="{{ url_for('static', filename='logo.png') }}" alt="TrustVerify AI Logo">
+</div>
 
     <h2>TrustVerify AI</h2>
 
